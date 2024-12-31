@@ -391,6 +391,12 @@ img.signature{
     z-index: 2;
 }
 
+.listing-event h5 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-weight: 700;
+    /* font-size: 16px; */
+}
 
 .listing .listing-event .data.left {
     float: left;
