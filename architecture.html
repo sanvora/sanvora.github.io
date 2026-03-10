@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Architecture diagram for the AI chat assistant on this portfolio." />
+  <title>Chat Architecture — Kham Sanvoravong</title>
+
+  <!-- Apply stored theme before first paint to avoid flash -->
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('portfolio-theme');
+        if (t) document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Serif+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script>
+    var _isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: _isLight ? {
+        background:           '#F5F0E8',
+        mainBkg:              '#EDE8DF',
+        primaryColor:         '#EDE8DF',
+        primaryTextColor:     '#1a1a1a',
+        primaryBorderColor:   '#b8892a',
+        secondaryColor:       '#E4DFD6',
+        tertiaryColor:        '#F5F0E8',
+        lineColor:            '#b8892a',
+        nodeBorder:           '#b8892a',
+        clusterBkg:           '#EAE5DC',
+        clusterBorder:        '#b8892a',
+        titleColor:           '#b8892a',
+        edgeLabelBackground:  '#F5F0E8',
+        fontFamily:           "'Source Serif Pro', serif",
+        fontSize:             '13px',
+      } : {
+        background:           '#111111',
+        mainBkg:              '#1a1a1a',
+        primaryColor:         '#1e1c18',
+        primaryTextColor:     '#e0e0e0',
+        primaryBorderColor:   '#e6b450',
+        secondaryColor:       '#161613',
+        tertiaryColor:        '#111111',
+        lineColor:            '#e6b450',
+        nodeBorder:           '#e6b450',
+        clusterBkg:           '#141412',
+        clusterBorder:        '#e6b450',
+        titleColor:           '#e6b450',
+        edgeLabelBackground:  '#1a1a1a',
+        fontFamily:           "'Source Serif Pro', serif",
+        fontSize:             '13px',
+      },
+    });
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: #111111;
+      color: #e0e0e0;
+      font-family: 'Source Serif Pro', Georgia, serif;
+      font-size: 16px;
+      line-height: 1.65;
+      min-height: 100vh;
+    }
+
+    /* ── Top bar ─────────────────────────────────────────────────────── */
+    .topbar {
+      border-bottom: 1px solid #333;
+      padding: 0.9rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      background: rgba(17,17,17,0.95);
+      backdrop-filter: blur(8px);
+      z-index: 10;
+    }
+
+    .topbar-back {
+      color: #e6b450;
+      text-decoration: none;
+      font-size: 0.82rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-family: 'Libre Baskerville', serif;
+      opacity: 0.75;
+      transition: opacity 0.2s;
+    }
+    .topbar-back:hover { opacity: 1; }
+
+    .topbar-title {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 0.82rem;
+      color: #a0a0a0;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    /* ── Hero ────────────────────────────────────────────────────────── */
+    .hero {
+      max-width: 860px;
+      margin: 4rem auto 3.5rem;
+      padding: 0 2rem;
+      border-left: 3px solid #e6b450;
+    }
+
+    .hero-eyebrow {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #e6b450;
+      margin-bottom: 0.75rem;
+    }
+
+    .hero h1 {
+      font-family: 'Libre Baskerville', serif;
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+
+    .hero p {
+      color: #a0a0a0;
+      font-size: 0.95rem;
+      max-width: 580px;
+      line-height: 1.7;
+    }
+
+    /* ── Content area ────────────────────────────────────────────────── */
+    .content {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 2rem 5rem;
+    }
+
+    /* ── Section ─────────────────────────────────────────────────────── */
+    .section {
+      margin-bottom: 4rem;
+    }
+
+    .section-label {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #e6b450;
+      margin-bottom: 0.4rem;
+    }
+
+    .section-title {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 0.65rem;
+    }
+
+    .section-desc {
+      font-size: 0.88rem;
+      color: #a0a0a0;
+      max-width: 660px;
+      margin-bottom: 1.5rem;
+      line-height: 1.65;
+    }
+
+    /* ── Diagram container ───────────────────────────────────────────── */
+    .diagram-box {
+      background: #161616;
+      border: 1px solid #2a2a2a;
+      border-top: 2px solid #e6b450;
+      border-radius: 4px;
+      padding: 2rem 1.5rem;
+      overflow-x: auto;
+    }
+
+    .diagram-box .mermaid {
+      display: flex;
+      justify-content: center;
+      min-height: 60px;
+    }
+
+    /* ── Legend pills ────────────────────────────────────────────────── */
+    .legend {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+    }
+
+    .legend-card {
+      border: 1px solid #2a2a2a;
+      border-radius: 3px;
+      padding: 0.85rem 1rem;
+      background: #161616;
+    }
+
+    .legend-card-title {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #e6b450;
+      margin-bottom: 0.35rem;
+    }
+
+    .legend-card p {
+      font-size: 0.8rem;
+      color: #a0a0a0;
+      line-height: 1.55;
+    }
+
+    /* ── Security callout ────────────────────────────────────────────── */
+    .callout {
+      border-left: 3px solid #e6b450;
+      background: #161616;
+      padding: 1.1rem 1.4rem;
+      border-radius: 0 3px 3px 0;
+      font-size: 0.86rem;
+      color: #a0a0a0;
+      line-height: 1.65;
+    }
+
+    .callout strong { color: #e0e0e0; }
+
+    /* ── Tech table ──────────────────────────────────────────────────── */
+    .tech-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    .tech-table thead th {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #e6b450;
+      text-align: left;
+      padding: 0.6rem 0.85rem;
+      border-bottom: 1px solid #333;
+    }
+
+    .tech-table tbody td {
+      padding: 0.7rem 0.85rem;
+      border-bottom: 1px solid #1e1e1e;
+      color: #a0a0a0;
+      vertical-align: top;
+    }
+
+    .tech-table tbody tr:last-child td { border-bottom: none; }
+
+    .tech-table tbody td:first-child {
+      color: #e0e0e0;
+      font-weight: 600;
+      font-size: 0.83rem;
+      width: 28%;
+      white-space: nowrap;
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 0.67rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.1rem 0.4rem;
+      border-radius: 2px;
+      margin-left: 0.3rem;
+      vertical-align: middle;
+    }
+    .tag-gold  { background: rgba(230,180,80,0.12); color: #e6b450; border: 1px solid rgba(230,180,80,0.25); }
+    .tag-green { background: rgba(80,180,100,0.1);  color: #72c47a; border: 1px solid rgba(80,180,100,0.25); }
+
+    /* ── Divider ─────────────────────────────────────────────────────── */
+    .divider {
+      border: none;
+      border-top: 1px solid #222;
+      margin: 0 0 3.5rem;
+    }
+
+    /* ── Footer ──────────────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid #222;
+      padding: 1.5rem 2rem;
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    footer span {
+      font-size: 0.78rem;
+      color: #555;
+      font-family: 'Libre Baskerville', serif;
+    }
+
+    footer .footer-links {
+      display: flex;
+      gap: 1.25rem;
+    }
+
+    footer a {
+      font-size: 0.78rem;
+      color: #e6b450;
+      text-decoration: none;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    footer a:hover { opacity: 1; }
+
+    /* ── Light theme overrides ───────────────────────────────────────────── */
+    [data-theme="light"] body        { background: #F5F0E8; color: #2a2a2a; }
+    [data-theme="light"] .topbar     { background: rgba(245,240,232,0.95); border-bottom-color: #d4c9b4; }
+    [data-theme="light"] .topbar-back  { color: #b8892a; }
+    [data-theme="light"] .topbar-title { color: #7a6a55; }
+    [data-theme="light"] .hero         { border-left-color: #b8892a; }
+    [data-theme="light"] .hero-eyebrow { color: #b8892a; }
+    [data-theme="light"] .hero h1      { color: #1a1a1a; }
+    [data-theme="light"] .hero p       { color: #5a5040; }
+    [data-theme="light"] .section-label   { color: #b8892a; }
+    [data-theme="light"] .section-title   { color: #1a1a1a; }
+    [data-theme="light"] .section-desc    { color: #5a5040; }
+    [data-theme="light"] .diagram-box     { background: #EDE8DF; border-color: #d4c9b4; border-top-color: #b8892a; }
+    [data-theme="light"] .legend-card     { background: #EDE8DF; border-color: #d4c9b4; }
+    [data-theme="light"] .legend-card-title { color: #b8892a; }
+    [data-theme="light"] .legend-card p   { color: #5a5040; }
+    [data-theme="light"] .callout         { background: #EDE8DF; border-left-color: #b8892a; color: #5a5040; }
+    [data-theme="light"] .callout strong  { color: #2a2a2a; }
+    [data-theme="light"] .tech-table thead th   { color: #b8892a; border-bottom-color: #d4c9b4; }
+    [data-theme="light"] .tech-table tbody td   { color: #5a5040; border-bottom-color: #e0dbd0; }
+    [data-theme="light"] .tech-table tbody td:first-child { color: #2a2a2a; }
+    [data-theme="light"] .tag-gold  { background: rgba(184,137,42,0.1); color: #b8892a; border-color: rgba(184,137,42,0.3); }
+    [data-theme="light"] .tag-green { background: rgba(60,140,70,0.1);  color: #3a8a45; border-color: rgba(60,140,70,0.25); }
+    [data-theme="light"] .divider   { border-top-color: #d4c9b4; }
+    [data-theme="light"] footer     { border-top-color: #d4c9b4; }
+    [data-theme="light"] footer span  { color: #9a8a75; }
+    [data-theme="light"] footer a     { color: #b8892a; }
+  </style>
+</head>
+<body>
+
+<!-- Top bar -->
+<div class="topbar">
+  <a href="/" class="topbar-back">← Portfolio</a>
+  <span class="topbar-title">Technical Architecture</span>
+</div>
+
+<!-- Hero -->
+<header class="hero">
+  <p class="hero-eyebrow">AI Chat Assistant</p>
+  <h1>How it works</h1>
+  <p>
+    The chat widget on this site runs a fine-tuned 360M-parameter language model directly in
+    your browser — no server involved. This page documents the architecture:
+    how responses are generated, how context is retrieved, how the model was trained via
+    knowledge distillation, and how a token-gated cloud path enables full-scale answers when needed.
+  </p>
+</header>
+
+<main class="content">
+
+  <!-- Section 1: Runtime flow -->
+  <section class="section">
+    <p class="section-label">Section 01</p>
+    <h2 class="section-title">Runtime Flow</h2>
+    <p class="section-desc">
+      Every message travels through a retrieval pipeline before generation.
+      Two inference paths exist: an on-device model for all visitors, and
+      a cloud model activated by a signed access token.
+    </p>
+
+    <div class="diagram-box">
+      <div class="mermaid">
+flowchart TD
+    U(["Visitor"])
+
+    subgraph BROWSER["Browser — Visitor's Device"]
+        direction TB
+        UI["Chat UI"]
+
+        subgraph RAG["RAG Pipeline"]
+            QE["Embed query\nMiniLM-L6-v2 · WASM"]
+            IC["Intent detection\n+ guardrails"]
+            VS["Vector search\ncosine similarity"]
+            CTX["Inject top-K context\ninto prompt"]
+        end
+
+        subgraph ONDEV["On-Device Path"]
+            WW["Web Worker"]
+            SLM["SmolLM2-360M-Instruct\nONNX · WebGPU or WASM"]
+        end
+
+        CHUNKS[("Encrypted resume chunks\nAES-256-GCM")]
+    end
+
+    subgraph CLOUD["Cloud Path — VIP token required"]
+        direction LR
+        VT["Validate token\nHMAC-SHA256"]
+        CF["Cloudflare Worker"]
+        GROQ["Groq — Llama 3.3 70B"]
+        VT --> CF --> GROQ
+    end
+
+    U -->|"question"| UI
+    UI --> QE
+    CHUNKS -->|"context"| VS
+    QE --> IC --> VS --> CTX
+
+    CTX -->|"no token"| WW --> SLM -->|"streamed tokens"| UI
+    CTX -->|"VIP token"| VT
+    GROQ -->|"streamed response"| UI
+      </div>
+    </div>
+
+    <div class="legend">
+      <div class="legend-card">
+        <p class="legend-card-title">On-Device Path</p>
+        <p>Default for all visitors. Inference runs inside the browser tab via WebGPU — no network call, no latency on the model request.</p>
+      </div>
+      <div class="legend-card">
+        <p class="legend-card-title">Cloud Path</p>
+        <p>Activated by a time-limited signed token. Routes to Llama 3.3 70B via Cloudflare. The API key never reaches the browser.</p>
+      </div>
+      <div class="legend-card">
+        <p class="legend-card-title">RAG Pipeline</p>
+        <p>Embeds the query, finds the closest chunks from the portfolio knowledge base by cosine similarity, and injects them as context before generation.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- Section 2: Build pipeline -->
+  <section class="section">
+    <p class="section-label">Section 02</p>
+    <h2 class="section-title">Build Pipeline</h2>
+    <p class="section-desc">
+      Resume and company data is embedded and encrypted at CI time.
+      Only ciphertext ships to the public repo — the key is injected
+      at build time from a GitHub Actions secret.
+    </p>
+
+    <div class="diagram-box">
+      <div class="mermaid">
+flowchart LR
+    SRC[("Source data\nknowledge.md\ncompanies/ · jobs/")]
+
+    subgraph CI["GitHub Actions CI — private repo"]
+        direction TB
+        EMB["generate_embeddings.mjs\nMiniLM-L6-v2 → 384-dim vectors"]
+        ENC["encrypt-chunks.mjs\nAES-256-GCM\nkey from GitHub Secret"]
+        BUILD["npm run build\nVite bundles TypeScript\nkey injected at build time"]
+    end
+
+    PAGES["GitHub Pages\nstatic files only"]
+
+    SRC --> EMB --> ENC --> BUILD --> PAGES
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- Section 3: Security -->
+  <section class="section">
+    <p class="section-label">Section 03</p>
+    <h2 class="section-title">What this diagram does not expose</h2>
+    <p class="section-desc">Sharing an architecture diagram is safe here — and this is why.</p>
+
+    <div class="callout">
+      The Groq API key and the HMAC signing secret for access tokens both live in
+      <strong>Cloudflare Worker environment variables</strong> — they are never sent to
+      or cached in the browser. The resume data is encrypted with <strong>AES-256-GCM</strong>
+      at build time; the decryption key is injected into the JS bundle by CI, never
+      committed to source. Showing the flow reveals no exploitable secrets.
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- Section 4: Stack -->
+  <section class="section">
+    <p class="section-label">Section 04</p>
+    <h2 class="section-title">Technology Stack</h2>
+
+    <div class="diagram-box" style="padding: 0.25rem 0;">
+      <table class="tech-table">
+        <thead>
+          <tr>
+            <th>Layer</th>
+            <th>Technology</th>
+            <th>Detail</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>On-device model</td>
+            <td>SmolLM2-360M-Instruct — DRAG fine-tuned (ONNX) <span class="tag tag-gold">private</span></td>
+            <td>Knowledge-distilled from Llama 3.1 8B. Runs in browser via WebGPU or WASM.</td>
+          </tr>
+          <tr>
+            <td>Cloud model</td>
+            <td>Llama 3.3 70B via Groq <span class="tag tag-gold">token-gated</span></td>
+            <td>VIP path only. API key server-side in Cloudflare Worker.</td>
+          </tr>
+          <tr>
+            <td>Embeddings</td>
+            <td>all-MiniLM-L6-v2</td>
+            <td>Transformers.js · 384-dim vectors · WASM inference in browser.</td>
+          </tr>
+          <tr>
+            <td>API gateway</td>
+            <td>Cloudflare Worker</td>
+            <td>HMAC token validation, rate limiting, Groq proxy.</td>
+          </tr>
+          <tr>
+            <td>Encryption</td>
+            <td>AES-256-GCM</td>
+            <td>Node.js at build time. Web Crypto API at runtime.</td>
+          </tr>
+          <tr>
+            <td>Build</td>
+            <td>Vite 6 + TypeScript 5</td>
+            <td>GitHub Actions CI → GitHub Pages (static hosting).</td>
+          </tr>
+          <tr>
+            <td>Guardrails</td>
+            <td>Custom intent classifier</td>
+            <td>105 eval cases. Hallucination guards. Prompt injection detection.</td>
+          </tr>
+          <tr>
+            <td>DRAG fine-tune</td>
+            <td>SmolLM2-360M-Instruct (KD + SFT) <span class="tag tag-green">shipped</span></td>
+            <td>Offline Knowledge Distillation: Llama 3.1 8B teacher → greedy completions → SFT on H100. fp32 ONNX export (quantize_dynamic produces float16 scale tensors incompatible with ONNX Runtime Web).</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+
+  <hr class="divider" />
+
+  <!-- Section 5: DRAG Distillation Pipeline -->
+  <section class="section">
+    <p class="section-label">Section 05</p>
+    <h2 class="section-title">DRAG Knowledge Distillation Pipeline</h2>
+    <p class="section-desc">
+      DRAG — Distilled RAG — trains a small 360M-parameter browser model to know this
+      portfolio's content through two offline stages: grounded data generation and
+      knowledge distillation from a larger teacher model.
+    </p>
+
+    <div class="diagram-box">
+      <div class="mermaid">
+flowchart TD
+    KC[("Knowledge Chunks\nresume · companies · jobs")]
+
+    subgraph DATAGEN["Stage 1 — Data Generation (local)"]
+        direction TB
+        DGS["gen-training-data.mjs\ngen-graph-triples.mjs"]
+        GROQ["Groq — Llama 3.3 70B\ngrounded Q&amp;A generation"]
+        GC{"Grounding Score ≥ 0.9"}
+        JSONL[("DRAG JSONL Dataset\n~400–500 examples")]
+        DGS -->|"prompt each chunk"| GROQ
+        GROQ -->|"candidate response"| GC
+        GC -->|"pass"| JSONL
+        GC -->|"fail — discard"| DGS
+    end
+
+    subgraph KD["Stage 2 — Knowledge Distillation (Colab H100)"]
+        direction TB
+        TEACH["Teacher — Llama 3.1 8B (fp16)\ngreedy completions · ~16 GB VRAM"]
+        SYNTH[("Synthetic Completions\ndeterministic teacher outputs")]
+        OFFLOAD["Teacher offloaded to CPU\n~80 GB VRAM freed for SFT"]
+        STU["SFTTrainer — SmolLM2-360M\nbf16 · lr=1e-5 · packing=True · 10 epochs"]
+        TEACH -->|"batch generate"| SYNTH
+        SYNTH --> OFFLOAD --> STU
+    end
+
+    ONNX["optimum-cli ONNX int8 export"]
+    HUB[("HuggingFace Hub")]
+    COMP["Comparison Panel\nBase vs DRAG Fine-tuned"]
+
+    KC --> DATAGEN
+    JSONL --> KD
+    STU --> ONNX --> HUB --> COMP
+      </div>
+    </div>
+
+    <p class="section-desc" style="margin-top: 1.75rem;">
+      Pure SFT fits a model directly to Q&amp;A pairs — but it can memorize surface patterns
+      without generalizing. Knowledge Distillation changes the target: instead of training on
+      static labels, the student learns from the teacher's own completions generated at inference
+      time. The teacher (Llama 3.1 8B) processes every training prompt with greedy decoding,
+      producing deterministic, high-quality completions. The teacher is then offloaded before
+      SFT begins, freeing ~80 GB of H100 VRAM for the student. This two-stage approach gives
+      SmolLM2-360M the teacher's response style and factual grounding — far beyond what
+      SFT on static labels alone would achieve.
+    </p>
+    <p class="section-desc">
+      Every example in the training dataset must pass a grounding check before it is
+      included: the script verifies that each factual claim in the teacher model's
+      answer can be traced back to text in the source chunk. Responses scoring below
+      0.9 are discarded and the chunk is re-prompted, keeping hallucinations out of
+      the training data itself.
+    </p>
+
+    <div class="legend">
+      <div class="legend-card">
+        <p class="legend-card-title">Knowledge Chunks</p>
+        <p>The same encrypted JSON chunks the chat widget retrieves at runtime — resume, company context, and job postings — repurposed as training source material.</p>
+      </div>
+      <div class="legend-card">
+        <p class="legend-card-title">Groq Data Generation</p>
+        <p>Llama 3.3 70B (via Groq API) generates grounded Q&amp;A pairs for dataset construction. Separate from the KD teacher — used offline to produce the DRAG JSONL training set.</p>
+      </div>
+      <div class="legend-card">
+        <p class="legend-card-title">Knowledge Distillation</p>
+        <p>Llama 3.1 8B runs on the H100 as the KD teacher — greedy decoding, no sampling — producing deterministic completions the student trains on. Teacher is deleted before SFT to free VRAM.</p>
+      </div>
+      <div class="legend-card">
+        <p class="legend-card-title">ONNX fp32 Export</p>
+        <p>The fine-tuned checkpoint is exported to fp32 ONNX via <code style="font-size:0.78rem;color:#e6b450;">optimum-cli --dtype fp32 --opset 18</code> and pushed to a private HuggingFace Hub repo. Loaded in the browser with <code style="font-size:0.78rem;color:#e6b450;">dtype: 'fp32'</code> via a read-only token baked into the bundle.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <span>Kham Sanvoravong · AI Portfolio</span>
+  <div class="footer-links">
+    <a href="https://linkedin.com/in/sanvora" target="_blank" rel="noopener">LinkedIn</a>
+    <a href="/">Portfolio</a>
+  </div>
+</footer>
+
+</body>
+</html>
