@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Resume - Kham Sanvoravong | AI Solutions Developer & Data Science Leader">
+  <meta name="theme-color" content="#dfc970">
+  
+  <title>Resume - Kham Sanvoravong</title>
+  
+  <!-- Preload critical assets -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Serif+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  
+  <style>
+    /* Resume specific overrides */
+    .resume-header {
+      padding: 8rem 0 4rem;
+      background: var(--color-bg);
+    }
+
+    .resume-header .container {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .resume-title {
+      font-family: var(--font-heading);
+      font-size: 3rem;
+      color: var(--color-heading);
+      margin-bottom: 0.5rem;
+      line-height: 1.1;
+    }
+
+    /* Thin gold accent line between name and title */
+    .resume-title-divider {
+      width: 3rem;
+      height: 2px;
+      background: var(--color-primary);
+      margin: 0.75rem 0;
+      border: none;
+    }
+    
+    .resume-subtitle {
+      font-family: var(--font-body);
+      font-size: 1.1rem;
+      color: var(--color-text-muted);
+      letter-spacing: 0.05em;
+      margin-bottom: 0;
+    }
+
+    .print-btn {
+      margin-top: 2rem;
+    }
+
+    @media print {
+      .main-nav, .theme-switcher, .footer, .print-btn {
+        display: none !important;
+      }
+      body {
+        background: white;
+        color: black;
+      }
+      .resume-header {
+        padding: 2rem 0;
+      }
+    }
+  </style>
+  <script type="module" crossorigin src="/assets/three-CNQzS4yT.js"></script>
+  <script type="module" crossorigin src="/assets/main-jS5J5CAD.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/main-BPZS7kBQ.css">
+</head>
+<body>
+
+  <!-- Skip to content for accessibility -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- Navigation -->
+  <nav id="main-nav" class="main-nav" role="navigation">
+    <div class="nav-container">
+      <a href="/" class="nav-logo" aria-label="Kham Sanvoravong Home">
+        <img src="/img/portfolio/ks_expresso_light.png" alt="KS Logo" class="logo-img">
+      </a>
+      <ul class="nav-links">
+        <li><a href="/#about">About</a></li>
+        <li><a href="/#impact">Impact</a></li>
+        <li><a href="/resume.html" class="active">Resume</a></li>
+        <li><a href="/#contact">Contact</a></li>
+      </ul>
+      <button id="theme-switcher" class="theme-toggle" aria-label="Toggle light/dark mode">
+        <svg class="theme-icon sun-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"/>
+          <line x1="12" y1="2" x2="12" y2="6"/>
+          <line x1="12" y1="18" x2="12" y2="22"/>
+          <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/>
+          <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/>
+          <line x1="2" y1="12" x2="6" y2="12"/>
+          <line x1="18" y1="12" x2="22" y2="12"/>
+          <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/>
+          <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/>
+        </svg>
+        <svg class="theme-icon moon-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+      <button class="hamburger" aria-label="Toggle mobile menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content">
+    
+    <header class="resume-header">
+      <div class="container">
+        <h1 class="resume-title">Kham Sanvoravong</h1>
+        <hr class="resume-title-divider" aria-hidden="true">
+        <p class="resume-subtitle">AI/ML &amp; Physics-Based Modeling Engineer</p>
+        <button class="btn btn-secondary print-btn" onclick="window.print()">Download PDF</button>
+      </div>
+    </header>
+
+    <!-- Experience Section -->
+    <section id="experience" class="section experience">
+      <div class="container">
+        <h2 class="section-title">Professional Experience</h2>
+        <div id="experience-timeline" class="timeline">
+          <!-- Experience items will be dynamically loaded -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="section skills">
+      <div class="container">
+        <h2 class="section-title">Technical Expertise</h2>
+        <div id="skills-grid" class="skills-grid">
+          <!-- Skills will be dynamically loaded -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Education Section -->
+    <section id="education" class="section education">
+      <div class="container">
+        <h2 class="section-title">Education</h2>
+        <div id="education-list" class="education-list">
+          <!-- Education items will be dynamically loaded -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2026 Kham Sanvoravong. Built with modern web technologies.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  
+  <!-- No JS fallback -->
+  <noscript>
+    <style>
+      .timeline, .skills-grid, .education-list {
+        opacity: 1 !important;
+        transform: none !important;
+      }
+    </style>
+  </noscript>
+</body>
+</html>
